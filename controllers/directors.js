@@ -4,9 +4,6 @@ function create(req, res, next) {
     res.send('Directors create');
 }
 
-// params by header = req.params.{name}
-// params by body = req.body.{name}
-// params by body = req.body.{name}
 function list(req, res, next) {
     res.send('Directors list');
 }
