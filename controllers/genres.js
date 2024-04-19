@@ -1,11 +1,13 @@
 const express = require('express');
+const { Genre } = require('../db')
 
 function create(req, res, next) {
     res.send('Genres create');
 }
 
 function list(req, res, next) {
-    res.send('Genres list');
+    // res.send('Genres list');
+    Genre.findAll({}).then(objects=>res.json(objects)).catch();
 }
 
 function index(req, res, next) {
