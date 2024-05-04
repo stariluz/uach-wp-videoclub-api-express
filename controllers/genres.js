@@ -1,30 +1,97 @@
 const express = require('express');
-const { Genre } = require('../db')
+const { Genre } = require('../db');
 
 function create(req, res, next) {
-    res.send('Genres create');
+    const { description, status } = req.body;
+    Genre.create({
+        description, status
+    }).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function list(req, res, next) {
-    // res.send('Genres list');
-    Genre.findAll({}).then(objects=>res.json(objects)).catch();
+    Genre.findAll({}).then(
+        objects => res.json(objects)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function index(req, res, next) {
-    // console.log(req);
-    res.send(`Genres index ${req.params.id}`);
+    const { id } = req.params;
+    Genre.findByPk(id).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function replace(req, res, next) {
-    res.send(`Genres replace ${req.params.id}`);
+    const { id } = req.params;
+
+    Genre.findByPk(id).then(
+        object => {
+            // const { description, status } = {
+            //     ...req.body,
+            //     ...object
+            // };
+            const description = req.body.description
+                ? req.body.description
+                : null;
+            const status = req.body.status
+                ? req.body.status
+                : null;
+            return object.update({
+                description, status
+            });
+        }
+    ).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function update(req, res, next) {
-    res.send(`Genres update ${req.params.id}`);
+    const { id } = req.params;
+
+    Genre.findByPk(id).then(
+        object => {
+            // const { description, status } = {
+            //     ...req.body,
+            //     ...object
+            // };
+            const description = req.body.description
+                ? req.body.description
+                : object.description;
+            const status = req.body.status
+                ? req.body.status
+                : object.status;
+            return object.update({
+                description, status
+            });
+        }
+    ).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function destroy(req, res, next) {
-    res.send(`Genres destroy ${req.params.id}`);
+    const { id } = req.params;
+    Genre.destroy({
+        where: {
+            id: id,
+        }
+    }).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
-module.exports={create, list, index, replace, update, destroy}
+module.exports = { create, list, index, replace, update, destroy }

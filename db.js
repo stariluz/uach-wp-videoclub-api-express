@@ -1,5 +1,7 @@
 const Sequelize = require('sequelize');
 const genreModel = require('./models/genre');
+const directorModel = require('./models/director');
+const movieModel = require('./models/movie');
 
 // 1) Database name
 // 2) User
@@ -13,6 +15,19 @@ const sequelize = new Sequelize('wp_videoclub', 'root', 'abcd1234', {
 });
 
 const Genre = genreModel(sequelize, Sequelize);
+const Director = directorModel(sequelize, Sequelize);
+const Movie = movieModel(sequelize, Sequelize);
+
+// A genre can have many movies.
+Genre.hasMany(Movie, { as: 'movies' });
+// A movie must have a genre.
+Movie.belongsTo(Genre, { as: 'genre' });
+
+// A director can have many movies.
+Director.hasMany(Movie, { as: 'movies' });
+// A movie must have a director.
+Movie.belongsTo(Director, { as: 'director' });
+
 
 sequelize.sync({
     force: true,
@@ -20,4 +35,4 @@ sequelize.sync({
     console.log("Restored database");
 });
 
-module.exports={Genre}
+module.exports = { Genre, Director, Movie }

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/waitingLists')
+const controller = require('../controllers/waiting-lists')
 
 router.post('/', controller.create);
 

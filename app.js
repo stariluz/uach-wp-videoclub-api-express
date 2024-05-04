@@ -8,6 +8,13 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const directorsRouter = require('./routes/directors');
 const genresRouter = require('./routes/genres');
+const actorsRouter = require('./routes/actors');
+const copiesRouter = require('./routes/copies');
+const loansRouter = require('./routes/loans');
+const membersRouter = require('./routes/members');
+const moviesRouter = require('./routes/movies');
+const waitingListsRouter = require('./routes/waiting-lists');
+
 
 const app = express();
 
@@ -25,6 +32,12 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/directors', directorsRouter);
 app.use('/genres', genresRouter);
+app.use('/actors', actorsRouter);
+app.use('/copies', copiesRouter);
+app.use('/loans', loansRouter);
+app.use('/members', membersRouter);
+app.use('/movies', moviesRouter);
+app.use('/waiting-lists', waitingListsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
