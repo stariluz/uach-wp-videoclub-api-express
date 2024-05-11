@@ -12,6 +12,12 @@ router.put('/:id', controller.replace);
 
 router.patch('/:id', controller.update);
 
+router.patch('/addFavoriteActor', controller.addFavoriteActor);
+
+router.patch('/addFavoriteDirector', controller.addFavoriteDirector);
+
+router.patch('/addFavoriteGenre', controller.addFavoriteGenre);
+
 router.delete('/:id', controller.destroy);
 
 
