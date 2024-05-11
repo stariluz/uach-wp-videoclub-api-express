@@ -34,10 +34,6 @@ function replace(req, res, next) {
 
     Director.findByPk(id).then(
         object => {
-            // const { description, status } = {
-            //     ...req.body,
-            //     ...object
-            // };
             const name = req.body.name
                 ? req.body.name
                 : null;
@@ -63,10 +59,6 @@ function update(req, res, next) {
 
     Director.findByPk(id).then(
         object => {
-            // const { description, status } = {
-            //     ...req.body,
-            //     ...object
-            // };
             const name = req.body.name
                 ? req.body.name
                 : object.name;

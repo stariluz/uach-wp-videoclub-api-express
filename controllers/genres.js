@@ -34,10 +34,6 @@ function replace(req, res, next) {
 
     Genre.findByPk(id).then(
         object => {
-            // const { description, status } = {
-            //     ...req.body,
-            //     ...object
-            // };
             const description = req.body.description
                 ? req.body.description
                 : null;
@@ -60,10 +56,6 @@ function update(req, res, next) {
 
     Genre.findByPk(id).then(
         object => {
-            // const { description, status } = {
-            //     ...req.body,
-            //     ...object
-            // };
             const description = req.body.description
                 ? req.body.description
                 : object.description;
