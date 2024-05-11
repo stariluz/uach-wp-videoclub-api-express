@@ -1,6 +1,3 @@
-const { FOREIGNKEYS } = require("sequelize/lib/query-types");
-const director = require("./director");
-
 module.exports = (sequelize, type) => {
     const Movie = sequelize.define('movies', {
         id: {
