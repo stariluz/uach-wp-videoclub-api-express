@@ -3,7 +3,7 @@ const genreModel = require('./models/genre');
 const directorModel = require('./models/director');
 const movieModel = require('./models/movie');
 const actorModel = require('./models/actor');
-const movieActorModel = require('./models/movieActor');
+const movieActorModel = require('./models/movie-actor');
 
 // 1) Database name
 // 2) User

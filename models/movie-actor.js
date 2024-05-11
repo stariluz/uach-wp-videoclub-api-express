@@ -5,8 +5,8 @@ module.exports = (sequelize, type) => {
             primaryKey: true,
             autoIncrement: true
         },
-        movieId: type.INTEGER,
-        actorId: type.INTEGER,
+        movieId: { type: type.INTEGER },
+        actorId: { type: type.INTEGER },
     });
     return MovieActor;
 }
