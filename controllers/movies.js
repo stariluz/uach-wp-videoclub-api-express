@@ -13,7 +13,7 @@ function create(req, res, next) {
 }
 
 function list(req, res, next) {
-    Movie.findAll({ include: ['genre', 'director', 'actors'] })).then(
+    Movie.findAll({ include: ['genre', 'director', 'actors', 'copies'] }).then(
         objects => res.json(objects)
     ).catch(
         err => res.send(err)
@@ -26,7 +26,7 @@ function addActor(req, res, next) {
         .then((movie) => {
             Actor.findByPk(actorId)
                 .then((actor) => {
-                    movie.addCAst(actor);
+                    movie.addActor(actor);
                     res.json(movie);
                 })
                 .catch(err => res.send(err));
@@ -34,6 +34,7 @@ function addActor(req, res, next) {
         .catch(err => res.send(err));
 
 }
+
 function index(req, res, next) {
     const { id } = req.params;
     Movie.findByPk(id).then(

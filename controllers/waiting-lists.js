@@ -1,28 +1,101 @@
 const express = require('express');
+const { Wait, WaitingListingList } = require('../db');
 
 function create(req, res, next) {
-    res.send('Waiting lists create');
+    const { memberId, movieId, entryDate, status } = req.body;
+    WaitingList.create({
+        memberId, movieId, entryDate, status
+    }).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function list(req, res, next) {
-    res.send('Waiting lists list');
+    WaitingList.findAll({ include: ['member', 'movie'] }).then(
+        objects => res.json(objects)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function index(req, res, next) {
-    // console.log(req);
-    res.send(`Waiting lists index ${req.params.id}`);
+    const { id } = req.params;
+    WaitingList.findByPk(id).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function replace(req, res, next) {
-    res.send(`Waiting lists replace ${req.params.id}`);
+    const { id } = req.params;
+
+    WaitingList.findByPk(id).then(
+        object => {
+            const memberId = req.body.memberId
+                ? req.body.memberId
+                : null;
+            const movieId = req.body.movieId
+                ? req.body.movieId
+                : null;
+            const entryDate = req.body.entryDate
+                ? req.body.entryDate
+                : null;
+            const status = req.body.status
+                ? req.body.status
+                : null;
+            return object.update({
+                memberId, movieId, entryDate, status
+            });
+        }
+    ).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function update(req, res, next) {
-    res.send(`Waiting lists update ${req.params.id}`);
+    const { id } = req.params;
+
+    WaitingList.findByPk(id).then(
+        object => {
+            const memberId = req.body.memberId
+                ? req.body.memberId
+                : object.memberId;
+            const copyId = req.body.copyId
+                ? req.body.copyId
+                : object.copyId;
+            const startDate = req.body.startDate
+                ? req.body.startDate
+                : object.startDate;
+            const endDate = req.body.endDate
+                ? req.body.endDate
+                : object.endDate;
+            return object.update({
+                memberId, copyId, startDate, endDate
+            });
+        }
+    ).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
 function destroy(req, res, next) {
-    res.send(`Waiting lists destroy ${req.params.id}`);
+    const { id } = req.params;
+    WaitingList.destroy({
+        where: {
+            id: id,
+        }
+    }).then(
+        object => res.json(object)
+    ).catch(
+        err => res.send(err)
+    );
 }
 
-module.exports={create, list, index, replace, update, destroy}
+module.exports = { create, list, index, replace, update, destroy }

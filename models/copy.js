@@ -6,7 +6,10 @@ module.exports = (sequelize, type) => {
             autoIncrement: true
         },
         movieId: {type: type.INTEGER},
-        number: {type: type.INTEGER},
+        number: {
+            type: type.INTEGER,
+            autoIncrement: true
+        },
         format: {
             type: type.ENUM,
             values: ['VHS', 'DVD', 'BLU_RAY'],
@@ -14,6 +17,7 @@ module.exports = (sequelize, type) => {
         status: {
             type: type.ENUM,
             values: ['disposable', 'grated', 'lost'],
+            default: 'disposable',
         },
     });
     return Copy;

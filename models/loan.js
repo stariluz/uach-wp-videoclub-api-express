@@ -7,8 +7,8 @@ module.exports = (sequelize, type) => {
         },
         memberId: { type: type.INTEGER },
         copyId: { type: type.INTEGER },
-        startDate: { type: type.DATE },
-        endDate: { type: type.DATE },
+        startDate: { type: type.DATE, default: new Date() },
+        endDate: { type: type.DATE, default: null },
     });
     return Loan;
 }
