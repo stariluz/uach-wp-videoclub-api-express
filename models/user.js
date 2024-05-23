@@ -6,15 +6,20 @@ const schema = mongoose.Schema({
     _email: String,
     _password: String,
     _salt: String,
+    _roles: [{
+        type: mongoose.ObjectId,
+        ref: 'Role'
+    }],
 });
 
 class User {
-    constructor(name, lastName, email, password, salt) {
+    constructor(name, lastName, email, password, salt, roles) {
         this._name = name;
         this._lastName = lastName;
         this._email = email;
         this._password = password;
         this._salt = salt;
+        this._roles = roles;
     }
     get name() {
         return this._name;
@@ -49,6 +54,13 @@ class User {
     }
     set salt(salt) {
         this._salt=salt;
+    }
+
+    get roles() {
+        return this._roles;
+    }
+    set roles(roles) {
+        this._roles=roles;
     }
 }
 

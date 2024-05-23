@@ -10,7 +10,8 @@ const jwtKey = "c2c3416e440dc7ad082c788352d983be";
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const directorsRouter = require('./routes/directors');
+const rolesRouter = require('./routes/roles');
+const permissionsRouter = require('./routes/permissions');
 
 // mongodb://<db_user>?:<db_password>?@<url>:<port>/<db_name>
 const port = "21000";
@@ -45,7 +46,8 @@ app.use(expressjwt({ secret: jwtKey, algorithms: ['HS256'] }).unless({
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/directors', directorsRouter);
+app.use('/roles', rolesRouter);
+app.use('/permissions', permissionsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
