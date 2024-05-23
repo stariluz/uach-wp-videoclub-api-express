@@ -9,7 +9,6 @@ function list(req, res, next) {
 }
 
 function index(req, res, next) {
-    // console.log(req);
     res.send(`Members index ${req.params.id}`);
 }
 
