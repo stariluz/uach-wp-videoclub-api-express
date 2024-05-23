@@ -8,7 +8,7 @@ async function create(req, res, next) {
 
     const currentUser = req.auth.data.user;
     const ability = await defineAbilityFor(currentUser);
-    
+
     if (ability.cannot('CREATE', 'Permission')) {
         res.status(403).json({
             msg: "Permission couldn't be created",

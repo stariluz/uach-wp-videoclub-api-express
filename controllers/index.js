@@ -15,10 +15,10 @@ function login(req, res, next) {
     User.findOne({ _email: email }).then(async (user) => {
         if (user) {
             const sanitiziedUser = new SanitiziedUser({
-                name: user.name,
-                lastName: user.lastName,
-                email: user.email,
-                roles: user.roles,
+                _name: user.name,
+                _lastName: user.lastName,
+                _email: user.email,
+                _roles: user.roles,
             });
             console.debug("Sanitizied User:", sanitiziedUser);
             return {
@@ -30,7 +30,6 @@ function login(req, res, next) {
             throw "Usuario o contraseña incorrectos";
         }
     }).then(({ tryPassword, userPassword, user }) => {
-        console.log(tryPassword, userPassword);
         if (tryPassword === userPassword) {
             res.status(200).json({
                 msg: "Successful login",
