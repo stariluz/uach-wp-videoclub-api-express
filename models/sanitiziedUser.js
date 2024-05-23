@@ -1,10 +1,10 @@
 
 class SanitiziedUser {
-    constructor({ name, lastName, email, roles }) {
-        this._name = name;
-        this._lastName = lastName;
-        this._email = email;
-        this._roles = roles;
+    constructor({ _name, _lastName, _email, _roles }) {
+        this._name = _name;
+        this._lastName = _lastName;
+        this._email = _email;
+        this._roles = _roles;
     }
     get name() {
         return this._name;

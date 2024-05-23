@@ -1,58 +1,34 @@
 const { defineAbility } = require('@casl/ability');
-const User = require('../models/user');
+const Role = require('../models/role');
 const SanitiziedUser = require('../models/sanitiziedUser');
 
-const defineAbilityFor = (user) => {
-    return defineAbility((can, cannot) => {
-        console.log("USER:",user);
+const defineAbilityFor = async (user) => {
+    return await defineAbility(async (can, cannot) => {
+        user = new SanitiziedUser(user);
         if (user.roles == undefined) {
-            can('CREATE', 'Role');
-            can('READ', 'Role');
-            can('UPDATE', 'User');
-            can('READ', 'User');
-            // cannot('CREATE', 'all');
-            // cannot('READ', 'all');
-            // cannot('UPDATE', 'all');
+            cannot('CREATE', 'all');
+            cannot('READ', 'all');
+            cannot('UPDATE', 'all');
             cannot('DELETE', 'all');
+            cannot('REPLACE', 'all');
+            cannot('LIST', 'all');
+            // can('LIST', 'Permission');
         } else {
-            for (role in user.roles) {
-                switch (role) {
-                    case 'ADMIN':
-                        can('CREATE', 'all');
-                        can('READ', 'all');
-                        can('UPDATE', 'all');
-                        can('DELETE', 'all');
-                        break;
-                    case 'MANAGER':
-                        can('READ', 'all');
-                        cannot('CREATE', 'Actor');
-                        cannot('UPDATE', 'Actor');
-                        cannot('CREATE', 'Movie');
-                        cannot('UPDATE', 'Movie');
-                        cannot('CREATE', 'Director');
-                        cannot('UPDATE', 'Director');
-                        cannot('CREATE', 'Genre');
-                        cannot('UPDATE', 'Genre');
-                        can('CREATE', 'Member');
-                        can('UPDATE', 'Member');
-                        can('DELETE', 'Member');
-                        can('CREATE', 'WaitingList');
-                        can('UPDATE', 'WaitingList');
-                        can('DELETE', 'WaitingList');
-                        can('CREATE', 'Copy');
-                        can('UPDATE', 'Copy');
-                        can('DELETE', 'Copy');
-                        break;
-                    default:
-                        can('CREATE', 'Permission');
-                        cannot('CREATE', 'all');
-                        cannot('READ', 'all');
-                        cannot('UPDATE', 'all');
-                        cannot('DELETE', 'all');
-                        break;
-    
-                }
-            }
+            await Promise.all(
+                user.roles.map(async (role) => {
+                    return new Promise((resolve, reject) => {
+                        Role.findOne({ _id: role }).populate('_permissions').then((obj) => {
+                            obj.permissions.forEach((permission) => {
+                                can(permission.type, permission.description);
+                            });
+                            resolve(true);
+                        }).catch((exc) => {
+                            reject(exc);
+                        });
+                    });
+                })
+            );
+            // can('LIST', 'Permission');
         }
     });
 }

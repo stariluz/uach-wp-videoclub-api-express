@@ -4,7 +4,7 @@ const schema = mongoose.Schema({
     _description: String,
     _type: {
         type: String,
-        enum: ['CREATE', 'READ', 'UPDATE', 'DELETE'],
+        enum: ['CREATE', 'READ', 'UPDATE', 'DELETE', 'REPLACE', 'LIST'],
         default: 'READ'
     },
     _roles: [{

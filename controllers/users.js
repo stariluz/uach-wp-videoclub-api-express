@@ -15,7 +15,7 @@ async function create(req, res, next) {
     const user = new User({ name, lastName, email, password: passwordHash, salt, roles: rolesArray });
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('CREATE', 'User')) {
         res.status(403).json({
@@ -24,8 +24,8 @@ async function create(req, res, next) {
         });
         return;
     }
-    
-    
+
+
     user.save().then((obj) => {
         res.status(200).json({
             msg: 'User correctly created',
@@ -39,9 +39,9 @@ async function create(req, res, next) {
     });
 }
 
-function list(req, res, next) {
+async function list(req, res, next) {
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('LIST', 'User')) {
         res.status(403).json({
@@ -50,7 +50,7 @@ function list(req, res, next) {
         });
         return;
     }
-    
+
     User.find().then((obj) => {
         res.status(200).json({
             msg: 'Users list',
@@ -64,11 +64,11 @@ function list(req, res, next) {
     });
 }
 
-function index(req, res, next) {
+async function index(req, res, next) {
     const { id } = req.params;
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('READ', 'User')) {
         res.status(403).json({
@@ -91,23 +91,32 @@ function index(req, res, next) {
     });
 }
 
-function replace(req, res, next) {
+async function replace(req, res, next) {
     const { id } = req.params;
-    const { name, lastName, email, password } = {
+    const { name, lastName, email, password, roles } = {
         name: req.body.name || "",
         lastName: req.body.lastName || "",
         email: req.body.email || "",
         password: req.body.password || "",
+        roles: JSON.parse(req.body.roles).map((id) => {
+            return new mongoose.Types.ObjectId(id);
+        }) || [],
     }
+
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
     const user = new Object({
         _name: name,
         _lastName: lastName,
         _email: email,
-        _password: password
+        _password: passwordHash,
+        _salt: salt,
+        _roles: roles,
     });
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('REPLACE', 'User')) {
         res.status(403).json({
@@ -117,20 +126,20 @@ function replace(req, res, next) {
         return;
     }
 
-    User.findOneAndUpdate({ _id: id }, user, { new: true }).then((obj) => {
+    User.findByIdAndUpdate(id, user, { new: true }).then((obj) => {
         res.status(200).json({
-            msg: `User ${obj.id} updated`,
+            msg: `User ${id} replaced`,
             obj: obj,
         });
     }).catch((exc) => {
         res.status(500).json({
-            msg: `User  ${obj.id} couldn't be updated`,
+            msg: `User  ${obj.id} couldn't be replaced`,
             obj: exc,
         })
     });
 }
 
-function update(req, res, next) {
+async function update(req, res, next) {
     const { id } = req.params;
     const { name, lastName, email, password, roles } = {
         name: req.body.name || undefined,
@@ -139,22 +148,24 @@ function update(req, res, next) {
         password: req.body.password || undefined,
         roles: JSON.parse(req.body.roles).map((id) => {
             return new mongoose.Types.ObjectId(id);
-        }),
+        }) || undefined,
     }
+
+    const salt = password ? await bcrypt.genSalt(10) : undefined;
+    const passwordHash = password ? await bcrypt.hash(password, salt) : undefined;
+
     const user = new Object({
-        ...{
-            _name: name,
-            _lastName: lastName,
-            _email: email,
-            _password: password,
-            _roles: roles,
-        }
+        _name: name,
+        _lastName: lastName,
+        _email: email,
+        _password: passwordHash,
+        _salt: salt,
+        _roles: roles,
     });
-    console.log(user);
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
-    console.log(ability.can('UPDATE', 'User'));
+    const ability = await defineAbilityFor(currentUser);
+
     if (ability.cannot('UPDATE', 'User')) {
         res.status(403).json({
             msg: "User couldn't be updated",
@@ -163,7 +174,7 @@ function update(req, res, next) {
         return;
     }
 
-    User.findOneAndUpdate({ _id: id }, user, { new: true }).then((obj) => {
+    User.findByIdAndUpdate(id, user, { new: true }).then((obj) => {
         res.status(200).json({
             msg: `User ${id} updated`,
             obj: obj,
@@ -176,11 +187,11 @@ function update(req, res, next) {
     });
 }
 
-function destroy(req, res, next) {
+async function destroy(req, res, next) {
     const { id } = req.params;
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('DELETE', 'User')) {
         res.status(403).json({
@@ -199,7 +210,7 @@ function destroy(req, res, next) {
         res.status(500).json({
             msg: `User  ${id} couldn't be deleted`,
             obj: exc,
-        })
+        });
     });
 }
 

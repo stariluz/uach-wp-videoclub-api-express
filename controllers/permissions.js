@@ -2,13 +2,13 @@ const express = require('express');
 const Permission = require('../models/permission');
 const { defineAbilityFor } = require('../utilities/permissions');
 
-function create(req, res, next) {
+async function create(req, res, next) {
     const { description, type } = req.body;
     const permission = new Permission({ description, type });
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
-
+    const ability = await defineAbilityFor(currentUser);
+    
     if (ability.cannot('CREATE', 'Permission')) {
         res.status(403).json({
             msg: "Permission couldn't be created",
@@ -30,9 +30,9 @@ function create(req, res, next) {
     });
 }
 
-function list(req, res, next) {
+async function list(req, res, next) {
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('LIST', 'Permission')) {
         res.status(403).json({
@@ -55,10 +55,10 @@ function list(req, res, next) {
     });
 }
 
-function index(req, res, next) {
+async function index(req, res, next) {
     const { id } = req.params;
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('READ', 'Permission')) {
         res.status(403).json({
@@ -81,7 +81,7 @@ function index(req, res, next) {
     });
 }
 
-function replace(req, res, next) {
+async function replace(req, res, next) {
     const { id } = req.params;
     const { description, type } = {
         description: req.body.description || "",
@@ -93,7 +93,7 @@ function replace(req, res, next) {
     });
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('REPLACE', 'Permission')) {
         res.status(403).json({
@@ -116,22 +116,19 @@ function replace(req, res, next) {
     });
 }
 
-function update(req, res, next) {
+async function update(req, res, next) {
     const { id } = req.params;
     const { description, type } = {
         description: req.body.description || undefined,
         type: req.body.type || undefined,
     }
     const permission = new Object({
-        ...{
-            _description: description,
-            _type: type,
-        }
+        _description: description,
+        _type: type,
     });
-    console.log(permission);
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('UPDATE', 'Permission')) {
         res.status(403).json({
@@ -154,10 +151,10 @@ function update(req, res, next) {
     });
 }
 
-function destroy(req, res, next) {
+async function destroy(req, res, next) {
     const { id } = req.params;
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('DELETE', 'Permission')) {
         res.status(403).json({

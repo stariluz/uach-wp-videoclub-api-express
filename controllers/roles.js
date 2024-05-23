@@ -10,9 +10,8 @@ async function create(req, res, next) {
     });
     const role = new Role({ description, status, permissions: permissionsArray });
 
-
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('CREATE', 'Role')) {
         res.status(403).json({
@@ -21,7 +20,6 @@ async function create(req, res, next) {
         });
         return;
     }
-
 
     role.save().then((obj) => {
         res.status(200).json({
@@ -36,9 +34,9 @@ async function create(req, res, next) {
     });
 }
 
-function list(req, res, next) {
+async function list(req, res, next) {
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('LIST', 'Role')) {
         res.status(403).json({
@@ -62,10 +60,10 @@ function list(req, res, next) {
     });
 }
 
-function index(req, res, next) {
+async function index(req, res, next) {
     const { id } = req.params;
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('READ', 'Role')) {
         res.status(403).json({
@@ -88,23 +86,23 @@ function index(req, res, next) {
     });
 }
 
-function replace(req, res, next) {
+async function replace(req, res, next) {
     const { id } = req.params;
-    const { name, lastName, email, password } = {
-        name: req.body.name || "",
-        lastName: req.body.lastName || "",
-        email: req.body.email || "",
-        password: req.body.password || "",
+    const { description, status, permissions } = {
+        description: req.body.description || "",
+        status: req.body.status || "",
+        permissions: req.body.permissions ? JSON.parse(req.body.permissions).map((id) => {
+            return new mongoose.Types.ObjectId(id);
+        }) : [],
     }
     const role = new Object({
-        _name: name,
-        _lastName: lastName,
-        _email: email,
-        _password: password
+        _description: description,
+        _status: status,
+        _permissions: permissions
     });
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('REPLACE', 'Role')) {
         res.status(403).json({
@@ -127,27 +125,24 @@ function replace(req, res, next) {
     });
 }
 
-function update(req, res, next) {
+async function update(req, res, next) {
     const { id } = req.params;
-    const { name, lastName, email, password } = {
-        name: req.body.name || undefined,
-        lastName: req.body.lastName || undefined,
-        email: req.body.email || undefined,
-        password: req.body.password || undefined,
+    const { description, status, permissions } = {
+        description: req.body.description || undefined,
+        status: req.body.status || undefined,
+        permissions: req.body.permissions ? JSON.parse(req.body.permissions).map((id) => {
+            return new mongoose.Types.ObjectId(id);
+        }) : undefined,
     }
     const role = new Object({
-        ...{
-            _name: name,
-            _lastName: lastName,
-            _email: email,
-            _password: password
-        }
+        _description: description,
+        _status: status,
+        _permissions: permissions
     });
-    console.log(role);
 
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
-
+    const ability = await defineAbilityFor(currentUser);
+    
     if (ability.cannot('UPDATE', 'Role')) {
         res.status(403).json({
             msg: "Role couldn't be updated",
@@ -169,10 +164,10 @@ function update(req, res, next) {
     });
 }
 
-function destroy(req, res, next) {
+async function destroy(req, res, next) {
     const { id } = req.params;
     const currentUser = req.auth.data.user;
-    const ability = defineAbilityFor(currentUser);
+    const ability = await defineAbilityFor(currentUser);
 
     if (ability.cannot('DELETE', 'Role')) {
         res.status(403).json({
